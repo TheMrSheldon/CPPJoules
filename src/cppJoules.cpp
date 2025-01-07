@@ -9,6 +9,8 @@
 
 EnergyTracker::EnergyTracker() : rapldevice(std::make_unique<RAPLDevice>()), nvmldevice(std::make_unique<NVMLDevice>()), state(TrackerState::Uninitialized) {}
 
+EnergyTracker::~EnergyTracker() = default;
+
 void EnergyTracker::start()
 {
   /**

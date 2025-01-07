@@ -45,6 +45,7 @@ private:
 
 public:
   EnergyTracker();
+  ~EnergyTracker();
   void start();
   void stop();
   TrackerResults calculate_energy() const noexcept;
