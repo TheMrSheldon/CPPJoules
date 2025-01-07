@@ -1,5 +1,5 @@
-#include <rapl_devices.h>
-#include <cppJoules_exceptions.h>
+#include "rapl_devices.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -138,21 +138,24 @@ std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
    */
   std::map<std::string, unsigned long long> energies;
 #ifdef __linux__
-  for (auto device : devices)
+  for (const auto &[first, path] : devices)
   {
-    std::string path = device.second;
-    std::ifstream Filehandler(path);
+    std::ifstream file(path);
 
-    if (!Filehandler.is_open())
+    if (!file)
     {
       std::cout << "Give read access to" << path << std::endl;
       return energies;
     }
 
-    std::string energy_s;
-    getline(Filehandler, energy_s);
-    long long energy = std::stoll(energy_s);
-    energies[device.first] = energy;
+    if (std::string line; getline(file, line))
+    {
+      energies[first] = std::stoll(line);
+    }
+    else
+    {
+      /** \todo handle error **/
+    }
   }
 #elif _WIN64
   if (!handler)
@@ -163,24 +166,21 @@ std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
   powergadgetfunction_bool _ReadSample = reinterpret_cast<powergadgetfunction_bool>(GETFUNC(handler, "ReadSample"));
   _ReadSample();
 
-  for (auto device : devices)
+  for (const auto &[first, second] : devices)
   {
     std::unique_ptr<double[]> data = std::make_unique<double[]>(10);
     int nData;
     if (initialized)
     {
-      _GetPowerData(device.second.first, device.second.second, data.get(), &nData);
-      energies[device.first] = static_cast<long long>(data.get()[1]);
+      _GetPowerData(second.first, second.second, data.get(), &nData);
+      energies[first] = static_cast<long long>(data.get()[1]);
     }
     else
     {
-      energies[device.first] = 0;
+      energies[first] = 0;
     }
   }
-  if (!initialized)
-  {
-    initialized = true;
-  }
+  initialized = true;
 #endif
 
   return energies;

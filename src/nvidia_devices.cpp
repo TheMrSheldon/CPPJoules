@@ -1,7 +1,6 @@
-#include "nvidia_devices.h"
+#include "nvidia_devices.hpp"
+
 #include <string>
-#include <memory>
-#include <iostream>
 /**
  * Every function in the NVML API returns a STATUS CODE when run
  * We can procede only if the status code is NVML_SUCCESS
@@ -40,7 +39,6 @@ NVMLDevice::NVMLDevice()
   usable = true;
   if (!nvmlhandle)
   {
-    std::cout << "Nvidia gpu not activated" << std::endl;
     usable = false;
     return;
   }
