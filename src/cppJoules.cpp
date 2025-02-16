@@ -1,13 +1,23 @@
-#include <cppJoules.hpp>
+#include <cppjoules/cppjoules.hpp>
 
 #include "rapl_devices.hpp"
 #include "nvidia_devices.hpp"
 #include "energy_state.hpp"
+#include "cppjoules/detail/pcmdevice.hpp"
 
 #include <cassert>
 #include <fstream>
 
-EnergyTracker::EnergyTracker() : rapldevice(std::make_unique<RAPLDevice>()), nvmldevice(std::make_unique<NVMLDevice>()), state(TrackerState::Uninitialized) {}
+using cppjoules::EnergyTracker;
+using cppjoules::TrackerResults;
+using cppjoules::detail::EnergyState;
+using cppjoules::detail::NVMLDevice;
+using cppjoules::detail::PCMDevice;
+using cppjoules::detail::RAPLDevice;
+
+EnergyTracker::EnergyTracker() : rapldevice(std::make_unique<RAPLDevice>()), nvmldevice(std::make_unique<NVMLDevice>()), pcmdevice(PCMDevice::getPCMDevice()), state(TrackerState::Uninitialized)
+{
+}
 
 EnergyTracker::~EnergyTracker() = default;
 

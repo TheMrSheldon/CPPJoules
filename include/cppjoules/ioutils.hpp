@@ -5,12 +5,15 @@
 
 #include <filesystem>
 
-class EnergyTracker;
-
-namespace cppjoules::io
+namespace cppjoules
 {
-    EXPOSE_DLL void dumpToConsole(const EnergyTracker &tracker) noexcept;
-    EXPOSE_DLL void dumpToCSV(const EnergyTracker &tracker, const std::filesystem::path &file) noexcept;
+    class EnergyTracker;
+
+    namespace io
+    {
+        EXPOSE_DLL void dumpToConsole(const EnergyTracker &tracker) noexcept;
+        EXPOSE_DLL void dumpToCSV(const EnergyTracker &tracker, const std::filesystem::path &file) noexcept;
+    }
 }
 
 #endif

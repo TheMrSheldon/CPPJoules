@@ -5,10 +5,13 @@
 #include <map>
 #include <string>
 
-struct EnergyState
+namespace cppjoules::detail
 {
-  std::chrono::time_point<std::chrono::system_clock> timestamp;
-  std::map<std::string, unsigned long long> energies;
-};
+  struct EnergyState
+  {
+    std::chrono::time_point<std::chrono::system_clock> timestamp;
+    std::map<std::string, unsigned long long> energies;
+  };
+}
 
 #endif

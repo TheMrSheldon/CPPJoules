@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 #include <chrono>
 #include <memory>
 #include <unordered_map>
@@ -23,42 +22,38 @@ typedef void (*powergadgetfunction_int_wchartp)(int, wchar_t *);
 typedef void (*powergadgetfunction_int_int_doublep_intp)(int, int, double *, int *);
 #endif
 
+using cppjoules::detail::RAPLDevice;
+
+#ifdef __linux__
+const std::filesystem::path RAPLDevice::RaplBasePath{"/sys/class/powercap/intel-rapl/"};
+#endif
+
+
 RAPLDevice::RAPLDevice()
 {
-  /**
-   * Initialization of RAPL using the powercap interface
-   * All the possible domains are searched for and
-   * the domains that are present are added for measurement
-   * Requires read access to all energy_uj files of accessible
-   * domains
-   *  */
 #ifdef __linux__
-  int socket_id = 0;
-  std::string path = RAPL_API_PATH + "intel-rapl:" + std::to_string(socket_id);
 
-  while (std::filesystem::exists(path))
-  {
-    socket_id++;
-    path = RAPL_API_PATH + "intel-rapl:" + std::to_string(socket_id);
-  }
-
-  for (uint32_t i = 0; i < socket_id; i++)
+  for (uint32_t i = 0; true; i++)
   {
     std::string temp = "intel-rapl:" + std::to_string(i);
+    auto basepath = RaplBasePath / temp;
+    if (!std::filesystem::exists(basepath))
+      break;
+    
     int inner_id = 0;
-    path = RAPL_API_PATH + temp + "/" + temp + ":" + std::to_string(inner_id);
+    auto path = basepath / (temp + ":" + std::to_string(inner_id));
 
     std::unordered_map<std::string, std::string> device, max_energy_device;
 
-    devices[getName(RAPL_API_PATH + temp)] = RAPL_API_PATH + temp + "/energy_uj";
-    max_energy_devices[getName(RAPL_API_PATH + temp)] = RAPL_API_PATH + temp + "/max_energy_range_uj";
+    devices[getName(RaplBasePath / temp)] = RaplBasePath / temp / "energy_uj";
+    max_energy_devices[getName(RaplBasePath / temp)] = RaplBasePath / temp / "max_energy_range_uj";
 
     while (std::filesystem::exists(path))
     {
-      devices[getName(path) + "-" + std::to_string(i)] = path + "/energy_uj";
-      max_energy_device[getName(path) + "-" + std::to_string(i)] = path + "/max_energy_range_uj";
+      devices[getName(path) + "-" + std::to_string(i)] = path / "energy_uj";
+      max_energy_device[getName(path) + "-" + std::to_string(i)] = path / "max_energy_range_uj";
       inner_id++;
-      path = RAPL_API_PATH + temp + "/" + temp + ":" + std::to_string(inner_id);
+      path = RaplBasePath / temp / (temp + ":" + std::to_string(inner_id));
     }
   }
 #endif
@@ -117,25 +112,17 @@ RAPLDevice::RAPLDevice()
 #endif
 }
 
-std::string RAPLDevice::getName(std::string path)
+std::string RAPLDevice::getName(const std::filesystem::path &path) noexcept
 {
-  /**
-   * Helper function to get the name of the domain
-   * given the path of the domain
-   */
-  std::string name_path = path + "/name";
-  std::ifstream file_handler(name_path);
-  std::string name;
-  getline(file_handler, name);
-  return name;
+  std::ifstream file_handler(path / "name");
+  if (std::string name; getline(file_handler, name))
+    return name;
+  /** \todo handle error **/
+  abort();
 }
 
 std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
 {
-  /**
-   * Function to get the energy counter values from Powercap in linux
-   * For windows, uses the functions exposed by the energy dll
-   */
   std::map<std::string, unsigned long long> energies;
 #ifdef __linux__
   for (const auto &[first, path] : devices)
@@ -144,7 +131,7 @@ std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
 
     if (!file)
     {
-      std::cout << "Give read access to" << path << std::endl;
+      std::cout << "Give read access to " << path << std::endl;
       return energies;
     }
 

@@ -15,6 +15,8 @@ typedef void (*nvmlfunction_uint32)(uint32_t *);
 typedef void (*nvmlfunction_unit32_nvmlDevice)(uint32_t, nvmlDevice_t *);
 typedef void (*nvmlfunction_nvmlDevice_unsignedlonglong)(nvmlDevice_t, unsigned long long *);
 
+using cppjoules::detail::NVMLDevice;
+
 NVMLDevice::NVMLDevice()
 {
   /**

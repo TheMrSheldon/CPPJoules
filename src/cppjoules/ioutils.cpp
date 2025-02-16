@@ -1,9 +1,11 @@
 #include <cppjoules/ioutils.hpp>
 
-#include <cppJoules.hpp>
+#include <cppjoules/cppjoules.hpp>
 
 #include <iostream>
 #include <fstream>
+
+using cppjoules::EnergyTracker;
 
 void cppjoules::io::dumpToConsole(const EnergyTracker &tracker) noexcept
 {

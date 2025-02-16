@@ -33,17 +33,20 @@ using GPUHandle = void *;
 #include <map>
 #include <memory>
 
-class NVMLDevice final
+namespace cppjoules::detail
 {
-private:
-  std::vector<std::unique_ptr<nvmlDevice_t>> devices;
-  std::unique_ptr<uint32_t> device_count;
+  class NVMLDevice final
+  {
+  private:
+    std::vector<std::unique_ptr<nvmlDevice_t>> devices;
+    std::unique_ptr<uint32_t> device_count;
 
-  GPUHandle nvmlhandle;
+    GPUHandle nvmlhandle;
 
-public:
-  NVMLDevice();
-  bool usable;
-  std::map<std::string, unsigned long long> getEnergy();
-};
+  public:
+    NVMLDevice();
+    bool usable;
+    std::map<std::string, unsigned long long> getEnergy();
+  };
+}
 #endif

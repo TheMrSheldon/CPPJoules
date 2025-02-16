@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 project(CPP_Joules VERSION 0.0.1 DESCRIPTION "Energy Measurement toolkit for cpp/cuda" LANGUAGES CXX)
 
+option(CPPJOULES_BUILD_EXAMPLES "" ON)
+
 add_subdirectory(src)
+
+if(CPPJOULES_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
 
 if(DEFINED CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(
