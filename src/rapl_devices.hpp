@@ -5,6 +5,10 @@
 #include <unordered_map>
 #include <map>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 class RAPLDevice final
 {
 #ifdef _WIN64
