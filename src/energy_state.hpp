@@ -7,7 +7,7 @@
 
 struct EnergyState
 {
-  std::chrono::steady_clock::time_point timestamp;
+  std::chrono::high_resolution_clock::time_point timestamp;
   std::map<std::string, unsigned long long> energies;
 };
 
