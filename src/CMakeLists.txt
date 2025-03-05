@@ -2,11 +2,10 @@ include(FetchContent)
 
 add_library(CPP_Joules
     cppJoules.cpp
-    nvidia_devices.cpp
-    rapl_devices.cpp
-
-    cppjoules/detail/pcmdevice.cpp
-    cppjoules/ioutils.cpp
+    ioutils.cpp
+    detail/nvmldevice.cpp
+    detail/pcmdevice.cpp
+    detail/rapldevice.cpp
 )
 
 target_compile_features(CPP_Joules PUBLIC cxx_std_17)

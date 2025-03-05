@@ -1,4 +1,4 @@
-#include "rapl_devices.hpp"
+#include "rapldevice.hpp"
 
 #include <fstream>
 #include <iostream>

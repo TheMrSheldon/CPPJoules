@@ -1,4 +1,4 @@
-#include "nvidia_devices.hpp"
+#include "nvmldevice.hpp"
 
 #include <string>
 /**

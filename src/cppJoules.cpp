@@ -1,9 +1,9 @@
 #include <cppjoules/cppjoules.hpp>
 
-#include "rapl_devices.hpp"
-#include "nvidia_devices.hpp"
 #include "energy_state.hpp"
-#include "cppjoules/detail/pcmdevice.hpp"
+#include "detail/rapldevice.hpp"
+#include "detail/nvmldevice.hpp"
+#include "detail/pcmdevice.hpp"
 
 #include <cassert>
 #include <fstream>
