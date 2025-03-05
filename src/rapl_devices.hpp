@@ -6,6 +6,10 @@
 #include <map>
 #include <filesystem>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 namespace cppjoules::detail
 {
   class RAPLDevice final

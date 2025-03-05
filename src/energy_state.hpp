@@ -1,5 +1,5 @@
-#ifndef ENERGY_STATE
-#define ENERGY_STATE
+#ifndef ENERGYSTATE_HPP
+#define ENERGYSTATE_HPP
 
 #include <chrono>
 #include <map>
@@ -9,7 +9,7 @@ namespace cppjoules::detail
 {
   struct EnergyState
   {
-    std::chrono::time_point<std::chrono::system_clock> timestamp;
+    std::chrono::high_resolution_clock::time_point timestamp;
     std::map<std::string, unsigned long long> energies;
   };
 }

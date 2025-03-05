@@ -8,7 +8,10 @@
 #include <chrono>
 #include <vector>
 #include <memory>
+
+#ifndef _MSC_VER
 #include <experimental/propagate_const>
+#endif
 
 namespace cppjoules
 {
@@ -17,7 +20,7 @@ namespace cppjoules
     class RAPLDevice;
     class NVMLDevice;
     class PCMDevice;
-    class EnergyState;
+    struct EnergyState;
   }
 
   enum class TrackerState
@@ -47,8 +50,13 @@ namespace cppjoules
   class EXPOSE_DLL EnergyTracker final
   {
   private:
+#ifdef _MSC_VER
     template <typename T>
     using PImpl = std::experimental::propagate_const<std::unique_ptr<T>>;
+#else
+    template <typename T>
+    using PImpl = std::unique_ptr<T>;
+#endif
     PImpl<detail::RAPLDevice> rapldevice;
     PImpl<detail::NVMLDevice> nvmldevice;
     PImpl<detail::PCMDevice> pcmdevice;

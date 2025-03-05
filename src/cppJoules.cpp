@@ -41,7 +41,7 @@ void EnergyTracker::start()
     nvidia_energy = nvmldevice->getEnergy();
     start_energy.insert(nvidia_energy.begin(), nvidia_energy.end());
   }
-  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{.timestamp = start_time, .energies = start_energy}));
+  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/ start_time, /*.energies =*/ start_energy}));
   state = TrackerState::Started;
 }
 
@@ -59,7 +59,7 @@ void EnergyTracker::stop()
     nvidia_energy = nvmldevice->getEnergy();
     stop_energy.insert(nvidia_energy.begin(), nvidia_energy.end());
   }
-  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{.timestamp = end_time, .energies = stop_energy}));
+  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/ end_time, /*.energies =*/ stop_energy}));
   state = TrackerState::Stopped;
 }
 
@@ -69,7 +69,7 @@ TrackerResults EnergyTracker::calculate_energy() const noexcept
   if (state != TrackerState::Stopped)
     return {};
 
-  TrackerResults results{.time = std::chrono::milliseconds{0}, .energy = {}};
+  TrackerResults results{/*.time =*/ std::chrono::milliseconds{0}, /*.energy =*/ {}};
 
   assert(energy_readings.size() % 2 == 0);
   for (auto i = 0u; i < energy_readings.size() - 1; i += 2)

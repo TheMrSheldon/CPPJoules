@@ -29,6 +29,7 @@ using GPUHandle = void *;
 
 #include <nvml/nvml.h>
 
+#include <string>
 #include <vector>
 #include <map>
 #include <memory>
