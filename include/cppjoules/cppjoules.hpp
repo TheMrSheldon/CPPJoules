@@ -1,7 +1,7 @@
 #ifndef CPPJOULES_CPPJOULES
 #define CPPJOULES_CPPJOULES
 
-#include "cppjoules/defines.hpp"
+#include "defines.hpp"
 
 #include <map>
 #include <string>
