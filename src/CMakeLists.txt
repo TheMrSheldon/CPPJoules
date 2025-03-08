@@ -26,8 +26,9 @@ FetchContent_MakeAvailable(nvml)
 target_include_directories(CPP_Joules PRIVATE ${nvml_SOURCE_DIR}/gen/)
 
 # PCM
-option(PCM_NO_ASAN "" ON)
+set(PCM_BUILD_EXECUTABLES OFF CACHE BOOL "" FORCE)
+set(PCM_NO_ASAN OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(pcm GIT_REPOSITORY https://github.com/intel/pcm.git GIT_TAG 202409)
 FetchContent_MakeAvailable(pcm)
-target_link_libraries(CPP_Joules PRIVATE PCM_STATIC_SILENT)
+target_link_libraries(CPP_Joules PRIVATE PCM_STATIC)
 target_include_directories(CPP_Joules PRIVATE ${pcm_SOURCE_DIR}/)
