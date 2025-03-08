@@ -11,6 +11,11 @@ namespace pcm
 namespace cppjoules::detail
 {
 
+    /**
+     * @brief 
+     * @details
+     * Using PCM without root: https://github.com/intel/pcm/?tab=readme-ov-file#executing-pcm-tools-under-non-root-user-on-linux
+     */
     class PCMDevice final
     {
     private:
