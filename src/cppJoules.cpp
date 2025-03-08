@@ -74,8 +74,8 @@ TrackerResults EnergyTracker::calculate_energy() const noexcept
   assert(energy_readings.size() % 2 == 0);
   for (auto i = 0u; i < energy_readings.size() - 1; i += 2)
   {
-    auto &start = *energy_readings[i];
-    auto &stop = *energy_readings[i + 1];
+    auto &start = *(energy_readings[i]);
+    auto &stop = *(energy_readings[i + 1]);
 
     assert(start.energies.size() == stop.energies.size());
 
