@@ -50,7 +50,7 @@ namespace cppjoules
   class EXPOSE_DLL EnergyTracker final
   {
   private:
-#ifdef _MSC_VER
+#ifndef _MSC_VER
     template <typename T>
     using PImpl = std::experimental::propagate_const<std::unique_ptr<T>>;
 #else
