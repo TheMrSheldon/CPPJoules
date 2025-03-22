@@ -66,6 +66,9 @@ namespace cppjoules
   public:
     EnergyTracker();
     ~EnergyTracker();
+
+    EnergyTracker& operator=(const EnergyTracker& other) = delete;
+
     void start();
     void stop();
     TrackerResults calculate_energy() const noexcept;
