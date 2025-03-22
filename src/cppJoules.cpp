@@ -15,31 +15,29 @@ using cppjoules::detail::NVMLDevice;
 using cppjoules::detail::PCMDevice;
 using cppjoules::detail::RAPLDevice;
 
-EnergyTracker::EnergyTracker() : rapldevice(std::make_unique<RAPLDevice>()), nvmldevice(std::make_unique<NVMLDevice>()), pcmdevice(PCMDevice::getPCMDevice()), state(TrackerState::Uninitialized)
+EnergyTracker::EnergyTracker() : devices{}, state(TrackerState::Uninitialized)
 {
+  auto nvml = cppjoules::detail::createNVMLDevice();
+  auto pcm = cppjoules::detail::createPCMDevice();
+  auto rapl = cppjoules::detail::createRAPLDevice();
+  if (nvml != nullptr)
+    devices.emplace_back(std::move(nvml));
+  if (pcm != nullptr)
+    devices.emplace_back(std::move(pcm));
+  if (rapl != nullptr)
+    devices.emplace_back(std::move(rapl));
 }
 
 EnergyTracker::~EnergyTracker() = default;
 
 void EnergyTracker::start()
 {
-  /**
-   * Getting both the RAPL and NVML Energies
-   */
   assert(state != TrackerState::Started);
   auto start_time = std::chrono::high_resolution_clock::now();
   std::map<std::string, unsigned long long> start_energy;
-  auto rapl_energy = rapldevice->getEnergy();
-  start_energy.insert(rapl_energy.begin(), rapl_energy.end());
-
-  std::map<std::string, unsigned long long> nvidia_energy;
-  /**
-   * Check if nvml can be used
-   */
-  if (nvmldevice->usable)
-  {
-    nvidia_energy = nvmldevice->getEnergy();
-    start_energy.insert(nvidia_energy.begin(), nvidia_energy.end());
+  for (auto& device : devices) {
+    auto energy = device->getEnergy();
+    start_energy.insert(energy.begin(), energy.end());
   }
   energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/ start_time, /*.energies =*/ start_energy}));
   state = TrackerState::Started;
@@ -51,15 +49,12 @@ void EnergyTracker::stop()
   if (state != TrackerState::Started)
     return;
   auto end_time = std::chrono::high_resolution_clock::now();
-  auto stop_energy = rapldevice->getEnergy();
-  std::map<std::string, unsigned long long> nvidia_energy;
-
-  if (nvmldevice->usable)
-  {
-    nvidia_energy = nvmldevice->getEnergy();
-    stop_energy.insert(nvidia_energy.begin(), nvidia_energy.end());
+  std::map<std::string, unsigned long long> stopenergy;
+  for (auto& device : devices) {
+    auto energy = device->getEnergy();
+    stopenergy.insert(energy.begin(), energy.end());
   }
-  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/ end_time, /*.energies =*/ stop_energy}));
+  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/ end_time, /*.energies =*/ stopenergy}));
   state = TrackerState::Stopped;
 }
 
@@ -110,4 +105,18 @@ TrackerResults EnergyTracker::calculate_energy() const noexcept
     }
   }
   return results;
+}
+
+#include <numeric>
+
+using cppjoules::detail::PImpl;
+using cppjoules::Capability;
+using cppjoules::detail::EnergyDevice;
+
+static Capability aggCapability(Capability cap, const PImpl<EnergyDevice>& device) {
+  return static_cast<Capability>(cap | static_cast<Capability>(device->getCapabilities()));
+}
+
+Capability EnergyTracker::getCapabilities() const {
+  return std::accumulate(devices.begin(), devices.end(), Capability::NONE, aggCapability);
 }

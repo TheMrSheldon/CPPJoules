@@ -17,10 +17,16 @@ namespace cppjoules
 {
   namespace detail
   {
-    class RAPLDevice;
-    class NVMLDevice;
-    class PCMDevice;
+    class EnergyDevice;
     struct EnergyState;
+    
+#ifndef _MSC_VER
+    template <typename T>
+    using PImpl = std::experimental::propagate_const<std::unique_ptr<T>>;
+#else
+    template <typename T>
+    using PImpl = std::unique_ptr<T>;
+#endif
   }
 
   enum class TrackerState
@@ -32,6 +38,7 @@ namespace cppjoules
 
   enum Capability
   {
+    NONE = 0,
     CPU_PROFILE = 1 << 0,
     RAM_PROFILE = 1 << 1,
     GPU_PROFILE = 1 << 2
@@ -50,16 +57,7 @@ namespace cppjoules
   class EXPOSE_DLL EnergyTracker final
   {
   private:
-#ifndef _MSC_VER
-    template <typename T>
-    using PImpl = std::experimental::propagate_const<std::unique_ptr<T>>;
-#else
-    template <typename T>
-    using PImpl = std::unique_ptr<T>;
-#endif
-    PImpl<detail::RAPLDevice> rapldevice;
-    PImpl<detail::NVMLDevice> nvmldevice;
-    PImpl<detail::PCMDevice> pcmdevice;
+    std::vector<PImpl<detail::EnergyDevice>> devices;
     std::vector<std::unique_ptr<detail::EnergyState>> energy_readings;
     TrackerState state;
 
@@ -70,7 +68,7 @@ namespace cppjoules
     void stop();
     TrackerResults calculate_energy() const noexcept;
 
-    Capability getCapabilities();
+    Capability getCapabilities() const;
   };
 }
 #endif

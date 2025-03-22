@@ -1,5 +1,7 @@
-#ifndef RAPL_DEVICES
-#define RAPL_DEVICES
+#ifndef CPPJOULES_DETAIL_RAPLDEVICES_HPP
+#define CPPJOULES_DETAIL_RAPLDEVICES_HPP
+
+#include "./energydevice.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -12,7 +14,7 @@
 
 namespace cppjoules::detail
 {
-  class RAPLDevice final
+  class RAPLDevice final : public EnergyDevice
   {
 #ifdef _WIN64
     bool initialized;
@@ -34,11 +36,12 @@ namespace cppjoules::detail
   public:
     RAPLDeviceHandle devices;
     std::unordered_map<std::string, std::string> max_energy_devices;
+    Capability getCapabilities() const override;
     /**
      * Function to get the energy counter values from Powercap in linux
      * For windows, uses the functions exposed by the energy dll
      */
-    std::map<std::string, unsigned long long> getEnergy();
+    std::map<std::string, unsigned long long> getEnergy() override;
 
     /**
      * Initialization of RAPL using the powercap interface

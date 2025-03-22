@@ -1,26 +1,52 @@
-#include "pcmdevice.hpp"
+#include "./energydevice.hpp"
 
+#if CPPJOULES_PCM_ENABLED
 #include <src/cpucounters.h>
 
-// #include <iostream> /** \todo remove **/
+using cppjoules::detail::Capability;
+using cppjoules::detail::EnergyDevice;
 
-using cppjoules::detail::PCMDevice;
-
-PCMDevice::PCMDevice(pcm::PCM &pcm) : pcm(pcm) {
-    /** \todo reimplement this for energy tracking **/
-    /*
-    std::cout << pcm.getCPUBrandString() << std::endl;
-    auto state1 = pcm.getSystemCounterState();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    auto state2 = pcm.getSystemCounterState();
-    std::cout << "Energy:        " << pcm::getConsumedEnergy(state1, state2) << std::endl;
-    std::cout << "Energy (DRAM): " << pcm::getDRAMConsumedJoules(state1, state2) << std::endl;*/
-}
-
-std::unique_ptr<PCMDevice> PCMDevice::getPCMDevice()
+class PCMDevice final : public EnergyDevice
 {
-    auto &pcm = *pcm::PCM::getInstance();
-    if (pcm.good())
-        return std::make_unique<PCMDevice>(pcm);
-    return nullptr;
+private:
+  pcm::PCM &pcm;
+  pcm::SystemCounterState start;
+
+public:
+  PCMDevice(pcm::PCM &pcm) : pcm(pcm), start(pcm.getSystemCounterState()) {}
+
+  Capability getCapabilities() const override
+  {
+    Capability cap = Capability::NONE;
+    if (pcm.packageEnergyMetricsAvailable())
+      cap = static_cast<Capability>(cap | Capability::CPU_PROFILE);
+    if (pcm.dramEnergyMetricsAvailable())
+      cap = static_cast<Capability>(cap | Capability::RAM_PROFILE);
+    return cap;
+  }
+
+  std::map<std::string, unsigned long long> getEnergy() override
+  {
+    auto now = pcm.getSystemCounterState();
+    std::map<std::string, unsigned long long> map;
+    if (pcm.packageEnergyMetricsAvailable())
+      map["core-0"] = pcm::getConsumedEnergy(start, now);
+    if (pcm.dramEnergyMetricsAvailable())
+      map["dram-0"] = pcm::getDRAMConsumedJoules(start, now);
+    return map;
+  }
+};
+
+std::unique_ptr<EnergyDevice> cppjoules::detail::createPCMDevice()
+{
+  auto &pcm = *pcm::PCM::getInstance();
+  if (pcm.good())
+    return std::make_unique<PCMDevice>(pcm);
+  return nullptr;
 }
+#else
+std::unique_ptr<EnergyDevice> cppjoules::detail::createPCMDevice()
+{
+  return nullptr;
+}
+#endif

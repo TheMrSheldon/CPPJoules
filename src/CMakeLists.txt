@@ -16,6 +16,16 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(CPP_Joules PRIVATE "-fexceptions")
 endif()
 
+##########################################################################################
+# Options
+##########################################################################################
+option(CPPJOULES_ENABLE_PCM "" ON)
+option(CPPJOULES_ENABLE_NVML "" ON)
+
+if((UNIX AND APPLE) OR WIN32)
+    set(CPPJOULES_ENABLE_PCM OFF)
+    message(INFO "pcm is not supported on macOS and Windows")
+endif()
 
 ##########################################################################################
 # Libraries
@@ -26,9 +36,12 @@ FetchContent_MakeAvailable(nvml)
 target_include_directories(CPP_Joules PRIVATE ${nvml_SOURCE_DIR}/gen/)
 
 # PCM
-set(PCM_BUILD_EXECUTABLES OFF CACHE BOOL "" FORCE)
-set(PCM_NO_ASAN OFF CACHE BOOL "" FORCE)
-FetchContent_Declare(pcm GIT_REPOSITORY https://github.com/intel/pcm.git GIT_TAG 202409)
-FetchContent_MakeAvailable(pcm)
-target_link_libraries(CPP_Joules PRIVATE PCM_STATIC)
-target_include_directories(CPP_Joules PRIVATE ${pcm_SOURCE_DIR}/)
+if(CPPJOULES_ENABLE_PCM)
+    set(PCM_BUILD_EXECUTABLES OFF CACHE BOOL "" FORCE)
+    set(PCM_NO_ASAN OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(pcm GIT_REPOSITORY https://github.com/intel/pcm.git GIT_TAG 202409)
+    FetchContent_MakeAvailable(pcm)
+    target_link_libraries(CPP_Joules PRIVATE PCM_STATIC)
+    target_include_directories(CPP_Joules PRIVATE ${pcm_SOURCE_DIR}/)
+    target_compile_definitions(CPP_Joules PRIVATE CPPJOULES_PCM_ENABLED)
+endif()

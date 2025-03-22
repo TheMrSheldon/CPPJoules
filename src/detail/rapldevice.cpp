@@ -22,7 +22,9 @@ typedef void (*powergadgetfunction_int_wchartp)(int, wchar_t *);
 typedef void (*powergadgetfunction_int_int_doublep_intp)(int, int, double *, int *);
 #endif
 
+using cppjoules::detail::EnergyDevice;
 using cppjoules::detail::RAPLDevice;
+using cppjoules::detail::Capability;
 
 #ifdef __linux__
 const std::filesystem::path RAPLDevice::RaplBasePath{"/sys/class/powercap/intel-rapl/"};
@@ -121,6 +123,11 @@ std::string RAPLDevice::getName(const std::filesystem::path &path) noexcept
   abort();
 }
 
+Capability RAPLDevice::getCapabilities() const {
+  /** \todo check and only report specific capabilities**/
+  return static_cast<Capability>(Capability::RAM_PROFILE | Capability::CPU_PROFILE | Capability::GPU_PROFILE);
+}
+
 std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
 {
   std::map<std::string, unsigned long long> energies;
@@ -171,4 +178,10 @@ std::map<std::string, unsigned long long> RAPLDevice::getEnergy()
 #endif
 
   return energies;
+}
+
+
+std::unique_ptr<EnergyDevice> createRAPLDevice() {
+  /** \todo check if RAPL can be read and return nullptr if it can't **/
+  return std::make_unique<RAPLDevice>();
 }
