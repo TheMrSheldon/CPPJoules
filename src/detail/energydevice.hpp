@@ -19,6 +19,8 @@ namespace cppjoules::detail
   class EnergyDevice
   {
   public:
+    virtual ~EnergyDevice() = default;
+
     virtual Capability getCapabilities() const = 0;
     virtual std::map<std::string, unsigned long long> getEnergy() = 0;
   };
