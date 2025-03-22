@@ -17,9 +17,10 @@ namespace cppjoules
 {
   namespace detail
   {
+    class RAPLDevice; /** \todo remove **/
     class EnergyDevice;
     struct EnergyState;
-    
+
 #ifndef _MSC_VER
     template <typename T>
     using PImpl = std::experimental::propagate_const<std::unique_ptr<T>>;
@@ -57,7 +58,8 @@ namespace cppjoules
   class EXPOSE_DLL EnergyTracker final
   {
   private:
-    std::vector<PImpl<detail::EnergyDevice>> devices;
+    detail::RAPLDevice *rapldevice; /** \todo remove **/
+    std::vector<detail::PImpl<detail::EnergyDevice>> devices;
     std::vector<std::unique_ptr<detail::EnergyState>> energy_readings;
     TrackerState state;
 

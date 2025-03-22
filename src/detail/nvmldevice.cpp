@@ -62,7 +62,7 @@ private:
 public:
   bool usable;
 
-  NVMLDevice::NVMLDevice()
+  NVMLDevice()
   {
     /**
      * In windows, the dll is found in the system32 folder.
@@ -116,7 +116,7 @@ public:
     return Capability::GPU_PROFILE;
   }
 
-  std::map<std::string, unsigned long long> NVMLDevice::getEnergy() override
+  std::map<std::string, unsigned long long> getEnergy() override
   {
     /**
      * Returns energy as a map to make it compatible with RAPL
