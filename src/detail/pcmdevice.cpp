@@ -45,6 +45,8 @@ std::unique_ptr<EnergyDevice> cppjoules::detail::createPCMDevice()
   return nullptr;
 }
 #else
+using cppjoules::detail::EnergyDevice;
+
 std::unique_ptr<EnergyDevice> cppjoules::detail::createPCMDevice()
 {
   return nullptr;
