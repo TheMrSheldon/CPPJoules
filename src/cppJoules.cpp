@@ -38,7 +38,7 @@ void EnergyTracker::start()
     auto energy = device->getEnergy();
     start_energy.insert(energy.begin(), energy.end());
   }
-  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/start_time, /*.energies =*/start_energy}));
+  energy_readings.emplace_back(std::move(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/start_time, /*.energies =*/start_energy})));
   state = TrackerState::Started;
 }
 
@@ -54,7 +54,7 @@ void EnergyTracker::stop()
     auto energy = device->getEnergy();
     stopenergy.insert(energy.begin(), energy.end());
   }
-  energy_readings.emplace_back(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/end_time, /*.energies =*/stopenergy}));
+  energy_readings.emplace_back(std::move(std::make_unique<EnergyState>(EnergyState{/*.timestamp =*/end_time, /*.energies =*/stopenergy})));
   state = TrackerState::Stopped;
 }
 
