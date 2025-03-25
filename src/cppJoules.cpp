@@ -26,6 +26,10 @@ EnergyTracker::EnergyTracker() : devices{}, state(TrackerState::Uninitialized)
     devices.emplace_back(std::move(rapl));
 }
 
+EnergyTracker::EnergyTracker(EnergyTracker&&) = default;
+
+EnergyTracker& EnergyTracker::operator=(EnergyTracker&&) = default;
+
 EnergyTracker::~EnergyTracker() = default;
 
 void EnergyTracker::start()

@@ -65,9 +65,12 @@ namespace cppjoules
 
   public:
     EnergyTracker();
+		EnergyTracker(const EnergyTracker&) = delete;
+		EnergyTracker(EnergyTracker&&);
     ~EnergyTracker();
 
-    EnergyTracker& operator=(const EnergyTracker& other) = delete;
+		EnergyTracker& operator=(const EnergyTracker&) = delete;
+		EnergyTracker& operator=(EnergyTracker&&);
 
     void start();
     void stop();
