@@ -19,6 +19,7 @@ namespace cppjoules::detail
   class EnergyDevice
   {
   public:
+    EnergyDevice() = default;
 		EnergyDevice(const EnergyDevice&) = default;
 		EnergyDevice(EnergyDevice&&) = default;
 		EnergyDevice& operator=(const EnergyDevice&) = default;
