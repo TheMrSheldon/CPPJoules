@@ -19,13 +19,15 @@ endif()
 ##########################################################################################
 # Options
 ##########################################################################################
-option(CPPJOULES_ENABLE_PCM "" ON)
-option(CPPJOULES_ENABLE_NVML "" ON)
 
-if((UNIX AND APPLE) OR WIN32)
-    set(CPPJOULES_ENABLE_PCM OFF)
-    message(INFO "pcm is not supported on macOS and Windows")
-endif()
+include(FeatureSummary)
+include(CMakeDependentOption)
+cmake_dependent_option(CPPJOULES_ENABLE_PCM "Use PCM as a source for CPU energy info (requires x86 or amd64 architecture as build target)" ON "UNIX AND APPLE) OR WIN3" OFF)
+option(CPPJOULES_ENABLE_NVML "Use NVML as a source for GPU energy info" ON)
+
+add_feature_info(pcm "CPPJOULES_ENABLE_PCM AND ((UNIX AND APPLE) OR WIN32)" "Integrate PCM support")
+add_feature_info(nvml "CPPJOULES_ENABLE_NVML" "Integrate NVML support")
+
 
 ##########################################################################################
 # Libraries

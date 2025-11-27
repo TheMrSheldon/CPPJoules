@@ -1,6 +1,9 @@
 #include "./energydevice.hpp"
 
 #if CPPJOULES_PCM_ENABLED
+#include "utils/nullbuffer.hpp"
+#include "utils/rdbufguard.hpp"
+
 #include <src/cpucounters.h>
 
 using cppjoules::detail::Capability;
@@ -39,6 +42,8 @@ public:
 
 std::unique_ptr<EnergyDevice> cppjoules::detail::createPCMDevice()
 {
+  utils::NullBuffer nullbuf{};
+  utils::RdbufGuard _{std::cerr, &nulbuf}; // Silence cerr since PCM likes to blabber onto it
   auto &pcm = *pcm::PCM::getInstance();
   if (pcm.good())
     return std::make_unique<PCMDevice>(pcm);

@@ -78,7 +78,7 @@ public:
 /**
  * In linux the so file is present in LD path
  */
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     const char *path = PATH;
 #endif
 
